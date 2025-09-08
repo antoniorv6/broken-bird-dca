@@ -1,11 +1,15 @@
 #pragma once
 #include <GameState.hpp>
+extern "C" {
+    #include <raylib.h>
+}
+#include <deque>
 
-class MainMenuState : public GameState
+class GameOverState : public GameState
 {
     public:
-        MainMenuState();
-        ~MainMenuState() = default;
+        GameOverState();
+        ~GameOverState() = default;
 
         void init() override;
         void handleInput() override;
@@ -17,5 +21,5 @@ class MainMenuState : public GameState
 
     
     private:
-        char entered_key;
+        
 };
