@@ -17,9 +17,20 @@ void MainGameState::init()
 {
     this->birdSprite = LoadTexture("assets/yellowbird-downflap.png");
     this->pipeSprite = LoadTexture("assets/pipe-green.png");
+    this->backgroundSprite = LoadTexture("assets/background-day.png");
 
     this->player.width = this->birdSprite.width;
     this->player.height = this->birdSprite.height;
+
+    this->PIPE_W = (float)this->pipeSprite.width;
+    this->PIPE_H = (float)this->pipeSprite.height;
+
+    this->GAP_H = this->player.height * 4.5f;
+    
+    // Asegurar que el gap mínimo permita pasar al pájaro cómodamente
+    if (this->GAP_H < this->player.height * 3.0f) {
+        this->GAP_H = this->player.height * 3.0f;
+    }
 }
 
 void MainGameState::handleInput()
@@ -35,17 +46,26 @@ void MainGameState::update(float deltaTime)
     this->player.vy += GRAVITY * deltaTime;
     this->player.y += this->player.vy * deltaTime;
 
-    Rectangle player_bbox = {this->player.x - this->player.width, this->player.y  - this->player.height,  this->player.width,  this->player.height};
+    Rectangle player_bbox = {
+        this->player.x - this->player.width/2, 
+        this->player.y - this->player.height/2, 
+        this->player.width, 
+        this->player.height
+    };
 
     //Control de spawn de tuberias
     this->spawnTimer += deltaTime;
     if(spawnTimer >= spawnEvery)
     {
         this->spawnTimer = 0.f;
-        float gapY = 120.f + (float)GetRandomValue(0,210);
+        float minGapY = this->GAP_H/2 + 50.f; // Margen superior
+        float maxGapY = 512.f - this->GAP_H/2 - 50.f; // Margen inferior (ajusta 640 a tu altura de pantalla)
+        
+        float gapY = minGapY + (float)GetRandomValue(0, (int)(maxGapY - minGapY));
+        
         PipePair pipes;
-        pipes.top = {450.f, 0.f, PIPE_W, gapY - GAP_H / 2.f};
-        pipes.bot = {450.f, gapY + GAP_H/2.f, PIPE_W, 640.f - (gapY - GAP_H / 2.f)};
+        pipes.top = {450.f, 0.f, this->PIPE_W, gapY - this->GAP_H/2.f};
+        pipes.bot = {450.f, gapY + this->GAP_H/2.f, this->PIPE_W, 512.f - (gapY + this->GAP_H/2.f)};
         pipes.scored = 0;
         this->pipes.emplace_back(pipes);
     }
@@ -80,15 +100,28 @@ void MainGameState::render()
     ClearBackground(SKYBLUE);
     //Rectangle player_bbox = {this->player.x - this->player.radius, this->player.y  - this->player.radius,  this->player.radius*2,  this->player.radius*2};
     //DrawRectanglePro(player_bbox, {0, 0}, 0, PURPLE);
+    DrawTexture(this->backgroundSprite, 0, 0, WHITE);
     DrawTexture(this->birdSprite, 
                 (int)(this->player.x - this->player.width/2), 
                 (int)(this->player.y - this->player.height/2), 
                 WHITE);
 
-    for(PipePair p : this->pipes)
+    for(const PipePair& p : this->pipes)
     {
-        DrawRectangle((int)p.top.x, (int)p.top.y, (int)p.top.width, (int)p.top.height, GREEN);
-        DrawRectangle((int)p.bot.x, (int)p.bot.y, (int)p.bot.width, (int)p.bot.height, GREEN);
+        Rectangle sourceRec = {0, 0, (float)this->pipeSprite.width, (float)this->pipeSprite.height};
+        Rectangle destRecTop = {
+            p.top.x + p.top.width/2,     // Centro X
+            p.top.y + p.top.height,      // Parte inferior del rectángulo
+            p.top.width, 
+            p.top.height
+        };
+        Vector2 origin = {p.top.width/2, 0}; // Origen en el centro-abajo
+        DrawTexturePro(this->pipeSprite, sourceRec, destRecTop, origin, 180.0f, WHITE);
+        
+        // Tubería inferior (normal)
+        Rectangle destRecBot = {p.bot.x, p.bot.y, p.bot.width, p.bot.height};
+        Vector2 originBot = {0, 0};
+        DrawTexturePro(this->pipeSprite, sourceRec, destRecBot, originBot, 0.0f, WHITE);
     }
 
     DrawText(std::to_string(points).c_str(), 30, 30, 24, WHITE);

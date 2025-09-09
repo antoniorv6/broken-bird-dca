@@ -6,8 +6,8 @@ extern "C" {
 #include <deque>
 
 struct Bird {
-    float x = 200.0f;
-    float y = 200.0f;
+    float x = 128.0f;
+    float y = 256.0f;
     float vy = 0.0f;
     float width, height;
 };
@@ -34,7 +34,7 @@ class MainGameState : public GameState
         Bird player;
         float GRAVITY = 900.f;
         float FLAP_VY = -300.f;
-        float GAP_H = 140.f, PIPE_W = 70.f;
+        float GAP_H = 140.f, PIPE_W = 70.f, PIPE_H=70.f;
         float PIPE_SPEED = 180.f;
         float spawnTimer = 0.f, spawnEvery = 1.8f; 
         std::deque<PipePair> pipes;
@@ -42,4 +42,5 @@ class MainGameState : public GameState
 
         Texture2D birdSprite;
         Texture2D pipeSprite;
+        Texture2D backgroundSprite;
 };

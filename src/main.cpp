@@ -11,7 +11,7 @@ int main()
 {
     float delta_time = 0.0f;
 
-    InitWindow(480, 640, "Flappy Bird DCA");
+    InitWindow(288, 512, "Flappy Bird DCA");
     SetTargetFPS(60);
 
     StateMachine state_machine = StateMachine();
