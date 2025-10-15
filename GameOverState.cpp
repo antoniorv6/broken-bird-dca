@@ -1,5 +1,6 @@
 #include <GameOverState.hpp>
 #include <MainGameState.hpp>
+#include <StateMachine.hpp>
 #include <iostream>
 
 GameOverState::GameOverState()
@@ -14,7 +15,8 @@ void GameOverState::handleInput()
 {
     if(IsKeyPressed(KEY_SPACE))
     {
-        this->states_machine.add_state(std::make_unique<MainGameState>())
+
+        this->state_machine->add_state(std::make_unique<MainGameState>(), true);
     }
 }
 

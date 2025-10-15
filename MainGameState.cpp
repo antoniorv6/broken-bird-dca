@@ -58,14 +58,15 @@ void MainGameState::update(float deltaTime)
     if(spawnTimer >= spawnEvery)
     {
         this->spawnTimer = 0.f;
-        float minGapY = this->GAP_H/2 + 50.f; // Margen superior
-        float maxGapY = 512.f - this->GAP_H/2 - 50.f; // Margen inferior (ajusta 640 a tu altura de pantalla)
-        
-        float gapY = minGapY + (float)GetRandomValue(0, (int)(maxGapY - minGapY));
+        int window_width = GetScreenWidth();
+        int window_height = GetScreenHeight();
+        float pipe_y_offset_top = GetRandomValue(PIPE_H/2.f, window_height/2);
+        //float pipe_y_offset_bot = GetRandomValue(0, window_height / 2.f);
+
         
         PipePair pipes;
-        pipes.top = {450.f, 0.f, this->PIPE_W, gapY - this->GAP_H/2.f};
-        pipes.bot = {450.f, gapY + this->GAP_H/2.f, this->PIPE_W, 512.f - (gapY + this->GAP_H/2.f)};
+        pipes.top = {(float)window_width, -pipe_y_offset_top, this->PIPE_W, this->PIPE_H};
+        pipes.bot = {(float)window_width, (PIPE_H - pipe_y_offset_top) + GetRandomValue(PIPE_H/2.f, window_height/2.f), this->PIPE_W, this->PIPE_H};
         pipes.scored = 0;
         this->pipes.emplace_back(pipes);
     }
@@ -108,20 +109,9 @@ void MainGameState::render()
 
     for(const PipePair& p : this->pipes)
     {
-        Rectangle sourceRec = {0, 0, (float)this->pipeSprite.width, (float)this->pipeSprite.height};
-        Rectangle destRecTop = {
-            p.top.x + p.top.width/2,     // Centro X
-            p.top.y + p.top.height,      // Parte inferior del rectángulo
-            p.top.width, 
-            p.top.height
-        };
-        Vector2 origin = {p.top.width/2, 0}; // Origen en el centro-abajo
-        DrawTexturePro(this->pipeSprite, sourceRec, destRecTop, origin, 180.0f, WHITE);
-        
-        // Tubería inferior (normal)
-        Rectangle destRecBot = {p.bot.x, p.bot.y, p.bot.width, p.bot.height};
-        Vector2 originBot = {0, 0};
-        DrawTexturePro(this->pipeSprite, sourceRec, destRecBot, originBot, 0.0f, WHITE);
+        DrawTextureEx(this->pipeSprite, {p.top.x + PIPE_W, p.top.y + PIPE_H}, 180.f, 1.f, WHITE);
+        // Tubería inferior - normal
+        DrawTextureEx(this->pipeSprite, {p.bot.x, p.bot.y}, 0.f, 1.f, WHITE);
     }
 
     DrawText(std::to_string(points).c_str(), 30, 30, 24, WHITE);

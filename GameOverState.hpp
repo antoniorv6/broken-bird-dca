@@ -9,7 +9,7 @@ class GameOverState : public GameState
 {
     public:
         GameOverState();
-        ~GameOverState() = default;
+        ~GameOverState() {};
 
         void init() override;
         void handleInput() override;

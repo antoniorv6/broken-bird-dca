@@ -8,9 +8,10 @@ StateMachine::StateMachine()
 
 void StateMachine::add_state(std::unique_ptr<GameState> newState, bool is_replacing)
 {
-    is_Adding = true;
-    is_replacing = is_replacing;
+    this->is_Adding = true;
+    is_Replacing = is_replacing;
     this->new_state = std::move(newState);
+    std::cout << "Including new state" << std::endl;
 }
 
 void StateMachine::remove_state(bool value)
@@ -30,6 +31,7 @@ void StateMachine::handle_state_changes(float& deltaTime)
         {
             this->states_machine.top()->resume();
             deltaTime = 0.0f;
+            
         }
     }
 
@@ -45,8 +47,10 @@ void StateMachine::handle_state_changes(float& deltaTime)
 
         this->states_machine.push(std::move(this->new_state));
         this->states_machine.top()->init();
+        this->states_machine.top()->setStateMachine(this);
         this->is_Adding = false;
         deltaTime = 0.0f;
     }
 }
 
+                
