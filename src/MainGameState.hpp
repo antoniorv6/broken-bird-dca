@@ -4,6 +4,7 @@ extern "C" {
     #include <raylib.h>
 }
 #include <deque>
+#include <entt/entt.hpp>
 
 struct Bird {
     float x = 128.0f;
@@ -43,4 +44,6 @@ class MainGameState : public GameState
         Texture2D birdSprite;
         Texture2D pipeSprite;
         Texture2D backgroundSprite;
+
+        entt::registry registry;
 };

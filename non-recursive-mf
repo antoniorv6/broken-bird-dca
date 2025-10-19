@@ -1,0 +1,35 @@
+.PHONY := info
+
+GREEN  := \033[1;32m
+YELLOW := \033[1;33m
+BLUE   := \033[1;34m
+RED    := \033[1;31m
+RESET  := \033[0m
+
+SRC_DIR := src
+OBJ_DIR := obj
+SRC := $(wildcard $(SRC_DIR)/*.cpp)
+OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
+DEPENDENCIES := -lraylib -lGL -lm -lpthread -lrt -lX11
+
+INC_DIRS := $(shell find $(SRC_DIR) -type d)
+INC_FLAGS := $(addprefix -I,$(INC_DIRS)) -I vendor/include
+
+game:$(OBJECTS)
+	g++ -o $@ $^ -L vendor/lib $(DEPENDENCIES)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	@echo "$(YELLOW)🧱 Compilando $< → $@$(RESET)"
+	@g++ -o $@ -c $^ $(INC_FLAGS)
+
+$(OBJ_DIR):
+	mkdir obj
+
+info:
+	$(info $(OBJECTS))
+	$(info $(SRC))
+	$(info $(INC_FLAGS))
+
+clean:
+	rm -rf obj
+	rm -rf dist

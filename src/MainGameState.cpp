@@ -1,6 +1,7 @@
 #include <MainGameState.hpp>
 #include <GameOverState.hpp>
 #include <StateMachine.hpp>
+#include <PositionComponent.hpp>
 #include <iostream>
 
 MainGameState::MainGameState()
@@ -15,6 +16,10 @@ MainGameState::~MainGameState()
 
 void MainGameState::init()
 {
+    entt::entity player = registry.create();
+    registry.emplace<PositionComponent>(player, 200, 200);
+    auto view = registry.view<const PositionComponent, VelocityComponent>();
+
     this->birdSprite = LoadTexture("assets/yellowbird-downflap.png");
     this->pipeSprite = LoadTexture("assets/pipe-green.png");
     this->backgroundSprite = LoadTexture("assets/background-day.png");
