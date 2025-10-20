@@ -1,31 +1,65 @@
-.PHONY := info
+.PHONY := all clean info clean-cache
 
+# 🎨 Colores
 GREEN  := \033[1;32m
 YELLOW := \033[1;33m
 BLUE   := \033[1;34m
 RED    := \033[1;31m
 RESET  := \033[0m
 
+# ⚙️ Configuración de rutas
 SRC_DIR := src
 OBJ_DIR := obj
-SRC := $(wildcard $(SRC_DIR)/*.cpp)
+BIN_DIR := dist
+
+# 🔍 Buscar todos los .cpp recursivamente dentro de src/
+SRC := $(shell find $(SRC_DIR) -type f -name '*.cpp')
+
+# 🧱 Generar los .o correspondientes en obj/ con la misma estructura
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
+
+# ⚙️ Dependencias de enlace
 DEPENDENCIES := -lraylib -lGL -lm -lpthread -lrt -lX11
 
-game:$(OBJECTS)
-	g++ -o $@ $^ -L vendor/lib $(DEPENDENCIES)
+# 📁 Incluir automáticamente todos los subdirectorios de src/
+INC_DIRS := $(shell find $(SRC_DIR) -type d)
+INC_FLAGS := $(addprefix -I,$(INC_DIRS)) -I vendor/include
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+# =====================================
+# 🎯 Objetivo principal
+# =====================================
+all: $(BIN_DIR)/game
+
+$(BIN_DIR)/game: $(OBJECTS)
+	@echo "$(BLUE)🔗 Enlazando objetos...$(RESET)"
+	@mkdir -p $(BIN_DIR)
+	@ccache g++ -o $@ $^ -L vendor/lib $(DEPENDENCIES)
+	@echo "$(GREEN)✅ Ejecutable generado: $(BIN_DIR)/game$(RESET)"
+
+# =====================================
+# 🧱 Regla de compilación
+# =====================================
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@echo "$(YELLOW)🧱 Compilando $< → $@$(RESET)"
-	@g++ -o $@ -c $^ -I $(SRC_DIR) -I vendor/include
+	@mkdir -p $(dir $@)
+	@ccache g++ -c $^ -o $@ $(INC_FLAGS)
 
-$(OBJ_DIR):
-	mkdir obj
-
-info:
-	$(info $(OBJECTS))
-	$(info $(SRC))
-
+# =====================================
+# 🧹 Limpieza
+# =====================================
 clean:
-	rm -rf obj
-	rm -rf dist
+	@echo "$(RED)🧹 Limpiando...$(RESET)"
+	@rm -rf $(OBJ_DIR) $(BIN_DIR)
+	@echo "$(GREEN)✅ Limpieza completada.$(RESET)"
+
+# =====================================
+# 🧾 Información
+# =====================================
+info:
+	$(info SRC = $(SRC))
+	$(info OBJECTS = $(OBJECTS))
+	$(info INC_FLAGS = $(INC_FLAGS))
+
+clean-cache:
+	ccache -C
+	ccache --zero-stats
