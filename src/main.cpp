@@ -24,7 +24,7 @@ int main()
         state_machine.handle_state_changes(delta_time);
         state_machine.getCurrentState()->handleInput();
         state_machine.getCurrentState()->update(delta_time);
-        state_machine.getCurrentState()->render();       
+        state_machine.getCurrentState()->render();      
     }
 
     CloseWindow();

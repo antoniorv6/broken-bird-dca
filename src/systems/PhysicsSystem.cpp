@@ -1,5 +1,0 @@
-
-void UpdatePhysics(float a)
-{
-    
-}
