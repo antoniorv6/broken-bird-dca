@@ -5,6 +5,8 @@ extern "C" {
 }
 #include <deque>
 #include <entt/entt.hpp>
+#include <PhysicsSystem.hpp>
+#include <RenderSystem.hpp>
 
 struct Bird {
     float x = 128.0f;
@@ -46,4 +48,6 @@ class MainGameState : public GameState
         Texture2D backgroundSprite;
 
         entt::registry registry;
+        PhysicsSystem physics_system;
+        RenderSystem render_system;
 };
