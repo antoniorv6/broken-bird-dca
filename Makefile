@@ -1,4 +1,4 @@
-.PHONY := all clean info clean-cache
+.PHONY := all clean info clean-cache dev-deps
 
 # 🎨 Colores
 GREEN  := \033[1;32m
@@ -11,6 +11,7 @@ RESET  := \033[0m
 SRC_DIR := src
 OBJ_DIR := obj
 BIN_DIR := dist
+LIB_DEP := vendor/lib
 
 # 🔍 Buscar todos los .cpp recursivamente dentro de src/
 SRC := $(shell find $(SRC_DIR) -type f -name '*.cpp')
@@ -23,7 +24,8 @@ DEPENDENCIES := -lraylib -lGL -lm -lpthread -lrt -lX11
 
 # 📁 Incluir automáticamente todos los subdirectorios de src/
 INC_DIRS := $(shell find $(SRC_DIR) -type d)
-INC_FLAGS := $(addprefix -I,$(INC_DIRS)) -I vendor/include
+INC_VENDORS := $(shell find vendor/include -type d)
+INC_FLAGS := $(addprefix -I,$(INC_DIRS)) $(addprefix -I,$(INC_VENDORS))
 
 # =====================================
 # 🎯 Objetivo principal
@@ -33,7 +35,7 @@ all: $(BIN_DIR)/game
 $(BIN_DIR)/game: $(OBJECTS)
 	@echo "$(BLUE)🔗 Enlazando objetos...$(RESET)"
 	@mkdir -p $(BIN_DIR)
-	@ccache g++ -o $@ $^ -L vendor/lib $(DEPENDENCIES)
+	@ccache g++ -o $@ $^ -L $(LIB_DEP) $(DEPENDENCIES)
 	@echo "$(GREEN)✅ Ejecutable generado: $(BIN_DIR)/game$(RESET)"
 
 # =====================================
@@ -63,3 +65,14 @@ info:
 clean-cache:
 	ccache -C
 	ccache --zero-stats
+
+dev-deps: | $(LIB_DEP)
+	git clone --depth 1 https://github.com/raysan5/raylib.git
+	$(MAKE) -C raylib/src/ PLATFORM=PLATFORM_DESKTOP
+	mv raylib/src/libraylib.a vendor/lib/
+	rm -rf raylib
+
+$(LIB_DEP):
+	mkdir -p vendor/lib
+
+
