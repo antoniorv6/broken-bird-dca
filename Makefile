@@ -62,7 +62,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@ccache g++ -c $^ -o $@ $(INC_FLAGS)
 
 # =====================================
-# 📦 Instalación
+# Instalación
 # =====================================
 install: $(BIN_DIR)/game
 	@echo "$(BLUE)📦 Instalando binario en $(DESTDIR)$(LIBDIR)...$(RESET)"
@@ -85,7 +85,7 @@ install: $(BIN_DIR)/game
 	@echo "$(GREEN)✅ Instalación completada.$(RESET)"
 
 # =====================================
-# 🗑️ Desinstalación
+# Desinstalación
 # =====================================
 uninstall:
 	@echo "$(RED)🗑️ Desinstalando $(DESTDIR)$(BINDIR)/$(APP_NAME)...$(RESET)"
@@ -97,7 +97,7 @@ uninstall:
 	@echo "$(GREEN)✅ Desinstalación completada.$(RESET)"
 
 # =====================================
-# 🧹 Limpieza
+# Limpieza
 # =====================================
 clean:
 	@echo "$(RED)🧹 Limpiando...$(RESET)"
@@ -105,7 +105,7 @@ clean:
 	@echo "$(GREEN)✅ Limpieza completada.$(RESET)"
 
 # =====================================
-# 🧾 Información
+# Información
 # =====================================
 info:
 	$(info SRC = $(SRC))
