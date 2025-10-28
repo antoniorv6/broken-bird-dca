@@ -45,30 +45,19 @@ jobs:
           echo "Found: $DEB_FILE"
           ls -lh *.deb 2>/dev/null || ls -lh $DEB_FILE
 
-      - name: Create Release
-        id: create_release
-        uses: comnoco/create-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      - name: Create Release and Upload .deb
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          files: ${{ steps.find_deb.outputs.deb_file }}
           body: |
-            Changes in this Release
-            - First Change
-            - Second Change
-          draft: false
-          prerelease: false
-          
-      - name: Upload .deb to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.find_deb.outputs.deb_file }}
-          asset_name: ${{ steps.find_deb.outputs.deb_name }}
-          asset_content_type: application/vnd.debian.binary-package
+            ## Paquete Debian para la versión ${{ steps.get_version.outputs.version }}
+            
+            ### Instalación
+            ```bash
+            sudo dpkg -i ${{ steps.find_deb.outputs.deb_name }}
+            sudo apt-get install -f  # Para resolver dependencias si es necesario
+            ```
+          fail_on_unmatched_files: true
 
       - name: Upload .deb as artifact
         uses: actions/upload-artifact@v4
