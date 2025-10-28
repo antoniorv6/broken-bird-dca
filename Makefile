@@ -112,7 +112,7 @@ info:
 
 dist:
 	@echo "$(BLUE)📦 Generando distribución debian en $(DIST_DIR)...$(RESET)"
-	@dpkg-buildpackage -us -uc -b
+	@dpkg-buildpackage -j1 -us -uc -b
 	@mkdir -p $(DIST_DIR)
 	@mv ../*.deb $(DIST_DIR)/ 2>/dev/null || true
 	@mv ../*.buildinfo $(DIST_DIR)/ 2>/dev/null || true
