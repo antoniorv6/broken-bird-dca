@@ -20,7 +20,7 @@ RAYLIB_DEP := $(addprefix $(LIB_DIR),$(RAYLIB))
 PREFIX ?= /usr/local
 BINDIR := $(PREFIX)/bin
 LIBDIR := $(PREFIX)/lib/$(APP_NAME)
-DATADIR := $(PREFIX)/share/$(APP_NAME)
+DATADIR := $(PREFIX)/share/
 INSTALL := install
 INSTALL_PROGRAM := $(INSTALL) -m 0755
 INSTALL_DATA := $(INSTALL) -m 0644
@@ -45,13 +45,13 @@ INC_FLAGS := $(addprefix -I,$(INC_DIRS)) $(addprefix -I,$(INC_VENDORS))
 # =====================================
 # Objetivo principal
 # =====================================
-all: $(RAYLIB_DEP) $(BIN_DIR)/game
+all: $(RAYLIB_DEP) $(BIN_DIR)/$(APP_NAME)
 
-$(BIN_DIR)/game: $(OBJECTS)
+$(BIN_DIR)/$(APP_NAME): $(OBJECTS)
 	@echo "$(BLUE)🔗 Enlazando objetos...$(RESET)"
 	@mkdir -p $(BIN_DIR)
 	@ccache g++ -o $@ $^ -L $(LIB_DIR) $(DEPENDENCIES)
-	@echo "$(GREEN)✅ Ejecutable generado: $(BIN_DIR)/game$(RESET)"
+	@echo "$(GREEN)✅ Ejecutable generado: $(BIN_DIR)/$(APP_NAME)$(RESET)"
 
 # =====================================
 # 🧱 Regla de compilación
@@ -64,14 +64,10 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 # =====================================
 # Instalación
 # =====================================
-install: $(BIN_DIR)/game
+install: $(BIN_DIR)/$(APP_NAME)
 	@echo "$(BLUE)📦 Instalando binario en $(DESTDIR)$(LIBDIR)...$(RESET)"
-	$(INSTALL_DIR) $(DESTDIR)$(LIBDIR)
-	$(INSTALL_PROGRAM) $(BIN_DIR)/game $(DESTDIR)$(LIBDIR)/$(APP_NAME).bin
-	@echo "$(BLUE)📦 Creando wrapper script en $(DESTDIR)$(BINDIR)...$(RESET)"
 	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
-	@printf '#!/bin/sh\ncd $(DATADIR) || exit 1\nexec $(LIBDIR)/$(APP_NAME).bin "$@"\n' > $(DESTDIR)$(BINDIR)/$(APP_NAME)
-	@chmod 0755 $(DESTDIR)$(BINDIR)/$(APP_NAME)
+	$(INSTALL_PROGRAM) $(BIN_DIR)/$(APP_NAME) $(DESTDIR)$(BINDIR)/$(APP_NAME)
 	@echo "$(BLUE)📦 Instalando assets en $(DESTDIR)$(DATADIR)/assets...$(RESET)"
 	$(INSTALL_DIR) $(DESTDIR)$(DATADIR)/assets
 	@if [ -d "$(ASSETS_DIR)" ]; then \
@@ -101,7 +97,7 @@ uninstall:
 # =====================================
 clean:
 	@echo "$(RED)🧹 Limpiando...$(RESET)"
-	@rm -rf $(OBJ_DIR) $(BIN_DIR)
+	@rm -rf $(OBJ_DIR) $(BIN_DIR) $(DIST_DIR)
 	@echo "$(GREEN)✅ Limpieza completada.$(RESET)"
 
 # =====================================

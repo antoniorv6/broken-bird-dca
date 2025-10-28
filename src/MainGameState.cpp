@@ -1,3 +1,4 @@
+#include <config.h>
 #include <MainGameState.hpp>
 #include <GameOverState.hpp>
 #include <StateMachine.hpp>
@@ -26,14 +27,16 @@ void MainGameState::init()
 
     //Comentario sin sentido
     //this->birdSprite = LoadTexture("assets/yellowbird-downflap.png");
-    //this->pipeSprite = LoadTexture("assets/pipe-green.png");
+    std::string path = GetAssetPath(std::string("pipe-green.png"));
+    std::cout << path << std::endl;
+    this->pipeSprite = LoadTexture(path.c_str());
     //this->backgroundSprite = LoadTexture("assets/background-day.png");
 //
     //this->player.width = this->birdSprite.width;
     //this->player.height = this->birdSprite.height;
 //
-    //this->PIPE_W = (float)this->pipeSprite.width;
-    //this->PIPE_H = (float)this->pipeSprite.height;
+    this->PIPE_W = (float)this->pipeSprite.width;
+    this->PIPE_H = (float)this->pipeSprite.height;
 //
     //this->GAP_H = this->player.height * 4.5f;
     //
@@ -76,7 +79,7 @@ void MainGameState::update(float deltaTime)
         registry.emplace<PhysicsComponent>(pipe, 
             float(window_width), (PIPE_H - pipe_y_offset_top) + GetRandomValue(PIPE_H/2.f, window_height/2.f), -PIPE_SPEED, 0.f
         );
-        registry.emplace<RenderComponent>(pipe, LoadTexture("assets/pipe-green.png"), PIPE_W, PIPE_H);
+        registry.emplace<RenderComponent>(pipe, pipeSprite, PIPE_W, PIPE_H);
 
         //PipePair pipes;
         //pipes.top = {(float)window_width, -pipe_y_offset_top, this->PIPE_W, this->PIPE_H};
