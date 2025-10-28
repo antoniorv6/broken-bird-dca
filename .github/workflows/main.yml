@@ -1,0 +1,74 @@
+name: Test Permissions
+
+on:
+  workflow_dispatch:  # Ejecutar manualmente desde GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  test-permissions:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Test GitHub Token permissions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Testing GitHub token permissions..."
+          
+          # Verificar si el token tiene permisos
+          curl -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/${{ github.repository }} \
+               | jq '.permissions'
+          
+          echo ""
+          echo "Token scopes:"
+          curl -I -H "Authorization: token $GITHUB_TOKEN" \
+               https://api.github.com/repos/${{ github.repository }} 2>&1 \
+               | grep -i "x-oauth-scopes" || echo "No scopes header found"
+      
+      - name: Check if can create release (dry run)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Checking if we can access releases API..."
+          
+          curl -X GET \
+               -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/${{ github.repository }}/releases \
+               -o /tmp/releases.json
+          
+          echo "Response:"
+          cat /tmp/releases.json | jq '.'
+          
+          if cat /tmp/releases.json | jq -e '.message' | grep -q "Resource not accessible"; then
+            echo "❌ ERROR: Cannot access releases - Check repository settings!"
+            echo ""
+            echo "Go to: Settings → Actions → General → Workflow permissions"
+            echo "Select: 'Read and write permissions'"
+            exit 1
+          else
+            echo "✅ Releases API is accessible"
+          fi
+      
+      - name: Permissions summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "PERMISSIONS CHECK SUMMARY"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Repository: ${{ github.repository }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Workflow: ${{ github.workflow }}"
+          echo ""
+          echo "If you see errors above, configure:"
+          echo "Settings → Actions → General → Workflow permissions"
+          echo "  → Select 'Read and write permissions'"
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
