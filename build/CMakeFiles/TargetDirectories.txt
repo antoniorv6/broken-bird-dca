@@ -1,0 +1,13 @@
+/home/antoniorv6/Dev/broken-bird-dca/build/CMakeFiles/edit_cache.dir
+/home/antoniorv6/Dev/broken-bird-dca/build/CMakeFiles/rebuild_cache.dir
+/home/antoniorv6/Dev/broken-bird-dca/build/CMakeFiles/list_install_components.dir
+/home/antoniorv6/Dev/broken-bird-dca/build/CMakeFiles/install.dir
+/home/antoniorv6/Dev/broken-bird-dca/build/CMakeFiles/install/local.dir
+/home/antoniorv6/Dev/broken-bird-dca/build/CMakeFiles/install/strip.dir
+/home/antoniorv6/Dev/broken-bird-dca/build/src/CMakeFiles/flappybirddca.dir
+/home/antoniorv6/Dev/broken-bird-dca/build/src/CMakeFiles/edit_cache.dir
+/home/antoniorv6/Dev/broken-bird-dca/build/src/CMakeFiles/rebuild_cache.dir
+/home/antoniorv6/Dev/broken-bird-dca/build/src/CMakeFiles/list_install_components.dir
+/home/antoniorv6/Dev/broken-bird-dca/build/src/CMakeFiles/install.dir
+/home/antoniorv6/Dev/broken-bird-dca/build/src/CMakeFiles/install/local.dir
+/home/antoniorv6/Dev/broken-bird-dca/build/src/CMakeFiles/install/strip.dir
