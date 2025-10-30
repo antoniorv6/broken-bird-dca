@@ -18,40 +18,28 @@ MainGameState::~MainGameState()
 
 void MainGameState::init()
 {
+    std::string pipe_path = GetAssetPath(std::string("pipe-green.png"));
+    pipeSprite = LoadTexture(pipe_path.c_str());
 
-    //Entidad del jugador
-    //auto player = registry.create();
+    std::string background_path = GetAssetPath(std::string("background-day.png"));
+    backgroundSprite = LoadTexture(background_path.c_str());
+
+    std::string player_path = GetAssetPath(std::string("yellow_bird-downflap.png"));
+    birdSprite = LoadTexture(player_path.c_str());
+
+    auto player = registry.create();
     //Añadimos componente de físicas al jugador
-    //registry.emplace<PhysicsComponent>(player, 128.0f, 256.0f, 0.0f, 0.0f);
-    //registry.emplace<RenderComponent>(player, LoadTexture("assets/yellowbird-downflap.png"), 0,0);
-
-    //Comentario sin sentido
-    //this->birdSprite = LoadTexture("assets/yellowbird-downflap.png");
-    std::string path = GetAssetPath(std::string("pipe-green.png"));
-    std::cout << path << std::endl;
-    this->pipeSprite = LoadTexture(path.c_str());
-    //this->backgroundSprite = LoadTexture("assets/background-day.png");
-//
-    //this->player.width = this->birdSprite.width;
-    //this->player.height = this->birdSprite.height;
-//
-    this->PIPE_W = (float)this->pipeSprite.width;
-    this->PIPE_H = (float)this->pipeSprite.height;
-//
-    //this->GAP_H = this->player.height * 4.5f;
-    //
-    //// Asegurar que el gap mínimo permita pasar al pájaro cómodamente
-    //if (this->GAP_H < this->player.height * 3.0f) {
-    //    this->GAP_H = this->player.height * 3.0f;
-    //}
+    registry.emplace<PlayerComponent>(player, 0);
+    registry.emplace<PhysicsComponent>(player, 128.0f, 256.0f, 0.0f, 0.0f, 1);
+    registry.emplace<RenderComponent>(player, LoadTexture("assets/yellowbird-downflap.png"), 0,0, 0);
+    
+    PIPE_W = (float)this->pipeSprite.width;
+    PIPE_H = (float)this->pipeSprite.height;
 }
 
 void MainGameState::handleInput()
 {
-    if(IsKeyPressed(KEY_SPACE))
-    {
-        this->player.vy = FLAP_VY;
-    }
+    input_system.update(registry);
 }
 
 void MainGameState::update(float deltaTime)
@@ -75,11 +63,17 @@ void MainGameState::update(float deltaTime)
         int window_height = GetScreenHeight();
         float pipe_y_offset_top = GetRandomValue(PIPE_H/2.f, window_height/2);
 
-        auto pipe = registry.create();
-        registry.emplace<PhysicsComponent>(pipe, 
-            float(window_width), (PIPE_H - pipe_y_offset_top) + GetRandomValue(PIPE_H/2.f, window_height/2.f), -PIPE_SPEED, 0.f
+        auto pipe_bottom = registry.create();
+        registry.emplace<PhysicsComponent>(pipe_bottom, 
+            float(window_width), (PIPE_H - pipe_y_offset_top) + GetRandomValue(PIPE_H/2.f, window_height/2.f), -PIPE_SPEED, 0.f, 0
         );
-        registry.emplace<RenderComponent>(pipe, pipeSprite, PIPE_W, PIPE_H);
+        registry.emplace<RenderComponent>(pipe_bottom, pipeSprite, PIPE_W, PIPE_H, 0);
+
+        auto pipe_top = registry.create();
+        registry.emplace<PhysicsComponent>(pipe_top, 
+            float(window_width), -pipe_y_offset_top, -PIPE_SPEED, 0.f, 0
+        );
+        registry.emplace<RenderComponent>(pipe_top, pipeSprite, PIPE_W, PIPE_H, 180.f);
 
         //PipePair pipes;
         //pipes.top = {(float)window_width, -pipe_y_offset_top, this->PIPE_W, this->PIPE_H};
@@ -118,6 +112,9 @@ void MainGameState::render()
 {
     BeginDrawing();
     ClearBackground(SKYBLUE);
+    
+    DrawTextureEx(backgroundSprite, {0.0f, 0.0f}, 0, 1, WHITE);
+
     render_system.update(registry);
 
     //Rectangle player_bbox = {this->player.x - this->player.radius, this->player.y  - this->player.radius,  this->player.radius*2,  this->player.radius*2};

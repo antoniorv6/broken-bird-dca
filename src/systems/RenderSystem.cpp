@@ -8,6 +8,15 @@ void RenderSystem::update(entt::registry& registry)
     auto view = registry.view<const RenderComponent, const PhysicsComponent>();
     for (auto [entity, rend, phys] : view.each())
     {
-        DrawTextureEx(rend.texture, {(float)phys.x, (float)phys.y}, 0.f, 1.f, WHITE);
+        float posx = phys.x;
+        float posy = phys.y;
+        
+        if(rend.rotation > 0.f)
+        {
+            posx += rend.width;
+            posy += rend.height;
+        }
+
+        DrawTextureEx(rend.texture, {posx, posy}, rend.rotation, 1.f, WHITE);
     };
 }
