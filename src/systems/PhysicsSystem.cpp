@@ -1,5 +1,9 @@
 #include <Components.hpp>
 #include <PhysicsSystem.hpp>
+extern "C"
+{
+    #include <raylib.h>
+}
 
 void PhysicsSystem::update(entt::registry& registry, float deltaTime)
 {
@@ -19,8 +23,12 @@ void PhysicsSystem::update(entt::registry& registry, float deltaTime)
         if(phys.hasGravity)
             phys.vy += 900.f * deltaTime;
         phys.x += phys.vx * deltaTime;
-        phys.y += phys.vy * deltaTime;
+        phys.y += phys.vy * deltaTime;        
     };
+}
+
+void PhysicsSystem::check_collisions(entt::registry& registry)
+{   
 }
 
 

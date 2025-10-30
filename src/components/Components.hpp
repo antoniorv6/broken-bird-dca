@@ -14,13 +14,13 @@ struct PhysicsComponent
     float y;
     float vx;
     float vy;
+    float width;
+    float height;
     uint8_t hasGravity;
 };
 
 struct RenderComponent
 {
     Texture2D texture;
-    float width;
-    float height;
     float rotation;
 };

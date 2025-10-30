@@ -13,8 +13,8 @@ void RenderSystem::update(entt::registry& registry)
         
         if(rend.rotation > 0.f)
         {
-            posx += rend.width;
-            posy += rend.height;
+            posx += phys.width;
+            posy += phys.height;
         }
 
         DrawTextureEx(rend.texture, {posx, posy}, rend.rotation, 1.f, WHITE);
